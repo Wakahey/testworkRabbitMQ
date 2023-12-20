@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  fastapi_app1:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+
+  websockets1:
+    build:
+      context: ./websocket
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  worker1:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    command: ["sh", "-c", "sleep 9 && python worker.py"]
