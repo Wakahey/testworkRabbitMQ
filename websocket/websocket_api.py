@@ -3,6 +3,7 @@ import websockets
 import json
 from aio_pika import connect_robust
 
+
 async def listen_results(websocket, path):
     connection = await connect_robust("amqp://guest:guest@rabbitmq/")
     channel = await connection.channel()
@@ -15,6 +16,7 @@ async def listen_results(websocket, path):
         except websockets.ConnectionClosed:
             print("WebSocket connection closed. Reconnecting...")
             break
+
 
 async def get_result(channel):
     result_queue = await channel.declare_queue('result_queue', durable=True)
@@ -30,6 +32,7 @@ async def get_result(channel):
 
     await asyncio.sleep(1)
     return await get_result(channel)
+
 
 if __name__ == "__main__":
     start_server = websockets.serve(listen_results, "0.0.0.0", 8765)
